@@ -13,9 +13,8 @@ const orderRoutes = require("./routes/orderRoute");
 const routeDashboard = require("./routes/routeDashboard");
  
 app.use(cors({
-  origin:[ 'http://localhost:3000',
-   "https://ecomyazid.vercel.app"], // autorise seulement ton frontend
-  credentials: true,               // si tu envoies des cookies
+  origin: "https://ecomyazid.vercel.app", 
+  credentials: true,                      
 }));
 
 // Middleware pour lire le JSO
