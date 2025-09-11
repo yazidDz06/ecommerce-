@@ -2,11 +2,13 @@ const express = require("express");
 const db = require("../models");
 const Product = db.Product;
 const Category = db.Category;
+const authMiddleware = require('../middlewares/authmw');
+const isAdmin = require("../middlewares/isAdmin");
 
 const router = express.Router();
 
-// ➕ Créer un produit avec une catégorie principale
-router.post("/", async (req, res) => {
+//  Créer un produit avec une catégorie principale
+router.post("/",authMiddleware,isAdmin, async (req, res) => {
   try {
     const { name, description, price, stock, imageUrl, categoryName } = req.body;
 
@@ -40,7 +42,7 @@ router.get("/", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-router.put("/:id", async (req, res) => {
+router.put("/:id",authMiddleware,isAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const { name, description, price, stock, imageUrl, categoryName } = req.body;
@@ -50,7 +52,7 @@ router.put("/:id", async (req, res) => {
       return res.status(404).json({ error: "Produit non trouvé" });
     }
 
-    // 🔥 si tu envoies categoryName, il faut d'abord retrouver la catégorie
+    
     let category = null;
     if (categoryName) {
       category = await Category.findOne({ where: { name: categoryName } });
@@ -88,7 +90,7 @@ catch(err){res.status(500).json({message : "erreur serveur",error :err.message})
 });
 
 //  Supprimer un produit par ID
-router.delete("/:id", async (req, res) => {
+router.delete("/:id",authMiddleware,isAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const product = await Product.findByPk(id);

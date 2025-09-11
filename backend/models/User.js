@@ -26,7 +26,11 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     timestamps: true,
   });
+  User.associate =(models)=>{
+  User.hasOne(models.Cart, { foreignKey: "userId", as: "cart" });
 
-  return User;
+
+ 
 };
-
+ return User;
+}

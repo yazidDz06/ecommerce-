@@ -1,11 +1,13 @@
 const express = require("express");
 const db = require("../models");
 const Category = db.Category;
+const authMiddleware = require("../middlewares/authmw");
+const isAdmin = require("../middlewares/isAdmin");
 
 const router = express.Router();
 
-// ➕ Ajouter une catégorie (uniquement principale)
-router.post("/", async (req, res) => {
+//  Ajouter une catégorie (uniquement principale)
+router.post("/",authMiddleware,isAdmin, async (req, res) => {
   try {
     const { name } = req.body;
     const category = await Category.create({ name });
@@ -15,19 +17,19 @@ router.post("/", async (req, res) => {
   }
 });
 
-// 📋 Lister toutes les catégories principales
+//  Lister toutes les catégories principales
 router.get("/", async (req, res) => {
   try {
     const categories = await Category.findAll();
-    // ✅ renvoyer un objet avec la clé "categories"
+    //  renvoyer un objet avec la clé "categories"
     res.json( categories );
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// ❌ Supprimer une catégorie
-router.delete("/:id", async (req, res) => {
+//  Supprimer une catégorie
+router.delete("/:id",authMiddleware,isAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const category = await Category.findByPk(id);
