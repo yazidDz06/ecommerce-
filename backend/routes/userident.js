@@ -38,7 +38,16 @@ router.post('/login', async (req, res) => {
   process.env.JWT_SECRET, 
   { expiresIn: "1d" }
 );
-res.cookie("jwt", token, { httpOnly: true, sameSite: "strict" });
+ res.cookie("jwt", token, {
+      httpOnly: true,
+      secure: true,      // obligatoire en prod HTTPS
+      sameSite: "none",  // pour cross-site (Vercel ↔ Render)
+      maxAge: 24 * 60 * 60 * 1000 // 1 jour
+    });
+
+    // Retourner l’utilisateur sans le mot de passe
+    const { password: _, ...userData } = user.dataValues;
+    res.json(userData);
 
     res.json({ message: "Connexion réussie", user });
 }catch (error) {
