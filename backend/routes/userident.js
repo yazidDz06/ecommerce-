@@ -13,9 +13,40 @@ const SALT_ROUNDS = 10;
 router.post('/register', async (req, res) => {
   const { username, email, password } = req.body;
   try {
+    // Vérifier si l'email existe déjà
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser) {
+      return res.status(400).json({ error: "Cet email est déjà utilisé" });
+    }
+
+    // Hasher le mot de passe
     const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+
+    // Créer l’utilisateur
     const user = await User.create({ username, email, password: hashedPassword });
-    res.status(201).json({ message: 'Utilisateur créé !', user });
+
+    // Générer un token JWT
+    const token = jwt.sign(
+      { id: user.id, username: user.username, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    // Définir le cookie (même que login)
+    res.cookie("jwt", token, {
+      httpOnly: true,
+      secure: true,      // obligatoire si HTTPS (Vercel ↔ Render)
+      sameSite: "none",  // cross-site
+      maxAge: 24 * 60 * 60 * 1000 // 1 jour
+    });
+
+    // Retourner l’utilisateur sans mot de passe
+    const { password: _, ...userData } = user.dataValues;
+    res.status(201).json({
+      message: "Utilisateur créé et connecté !",
+      user: userData
+    });
+
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
