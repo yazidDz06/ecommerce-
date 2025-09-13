@@ -13,7 +13,7 @@ const orderRoutes = require("./routes/orderRoute");
 const routeDashboard = require("./routes/routeDashboard");
  
 app.use(cors({
-  origin: "https://vercel.com/lyazids-projects/ecomyazid/JDA9PPVEk9k9GteCeVd3WEmf387r", 
+  origin: "https://ecomyazid.vercel.app", 
   credentials: true,                      
 }));
 
