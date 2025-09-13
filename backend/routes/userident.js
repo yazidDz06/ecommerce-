@@ -47,9 +47,10 @@ router.post('/login', async (req, res) => {
 
     // Retourner l’utilisateur sans le mot de passe
     const { password: _, ...userData } = user.dataValues;
-    res.json(userData);
-
-    res.json({ message: "Connexion réussie", user });
+     res.json({
+      message: "Connexion réussie",
+      user: userData
+    });
 }catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -65,11 +66,11 @@ router.get("/me", authMiddleware, async (req, res) => {
   }
 });
 router.post('/logout', (req, res) => {
-  res.cookie('jwt', '', {
+  res.cookie("jwt", "", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    expires: new Date(0) // expire immédiatement
+    secure: true,
+    sameSite: "none",
+    expires: new Date(0)
   });
   res.status(200).json({ message: 'Déconnecté' });
 });
